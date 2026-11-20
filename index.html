@@ -1,128 +1,149 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ONE RUPEE MART</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6fa;
-}
-header {
-  background: #172554;
-  color: white;
-  padding: 22px;
-  text-align: center;
-}
-.search {
-  padding: 15px;
-  text-align: center;
-}
-input {
-  width: 85%;
-  padding: 13px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-h2 { text-align: center; }
-.products {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 12px;
-}
-.card {
-  background: white;
-  padding: 18px 10px;
-  text-align: center;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #ddd;
-}
-.price {
-  color: #15803d;
-  font-weight: bold;
-}
-button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 11px;
-  border-radius: 8px;
-}
-footer {
-  text-align: center;
-  padding: 20px;
-  color: #555;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f1f5f9;color:#172554}
+header{background:#172554;color:white;text-align:center;padding:22px}
+header h1{margin:5px}
+.search{padding:15px}
+input{width:100%;padding:13px;border:1px solid #ddd;border-radius:9px}
+h2{text-align:center}
+.categories{display:flex;gap:8px;overflow-x:auto;padding:12px}
+.categories button{white-space:nowrap;background:#e0e7ff;color:#172554}
+button{border:0;padding:11px;border-radius:8px;cursor:pointer;background:#2563eb;color:white}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
+.card{background:white;padding:15px 8px;text-align:center;border-radius:12px;box-shadow:0 2px 7px #ddd}
+.pic{font-size:40px}
+.price{color:#15803d;font-weight:bold;font-size:18px}
+.card button{width:100%}
+#cart{background:white;margin:12px;padding:15px;border-radius:12px}
+.cart-item{display:flex;justify-content:space-between;gap:8px;margin:12px 0}
+footer{text-align:center;padding:20px}
 </style>
 </head>
 <body>
 
 <header>
-<h1>ONE RUPEE MART</h1>
+<h1>🛍️ ONE RUPEE MART</h1>
 <p>Smart Shopping, Small Price!</p>
 </header>
 
 <div class="search">
-<input type="text" id="search" placeholder="Search products..."
-oninput="searchProducts()">
+<input id="search" placeholder="Search products..." oninput="render()">
+</div>
+
+<h2>Shop By Category</h2>
+<div class="categories">
+<button onclick="setCategory('All')">All</button>
+<button onclick="setCategory('Clothes')">Clothes</button>
+<button onclick="setCategory('Electronics')">Electronics</button>
+<button onclick="setCategory('Home')">Home</button>
+<button onclick="setCategory('Beauty')">Beauty</button>
+<button onclick="setCategory('Toys')">Toys</button>
 </div>
 
 <h2>Our Products</h2>
+<div class="products" id="products"></div>
 
-<div class="products" id="products">
-
-<div class="card">
-<h3>Product 1</h3>
-<p>Useful Item</p>
-<p class="price">₹1</p>
-<button onclick="buy('Product 1')">Buy Now</button>
-</div>
-
-<div class="card">
-<h3>Product 2</h3>
-<p>Daily Essential</p>
-<p class="price">₹1</p>
-<button onclick="buy('Product 2')">Buy Now</button>
-</div>
-
-<div class="card">
-<h3>Product 3</h3>
-<p>Smart Accessory</p>
-<p class="price">₹1</p>
-<button onclick="buy('Product 3')">Buy Now</button>
-</div>
-
-<div class="card">
-<h3>Product 4</h3>
-<p>Special Item</p>
-<p class="price">₹1</p>
-<button onclick="buy('Product 4')">Buy Now</button>
-</div>
-
+<div id="cart">
+<h2>🛒 Shopping Cart</h2>
+<div id="cartItems">Your cart is empty.</div>
+<h3>Total: ₹<span id="total">0</span></h3>
+<button onclick="checkout()">Proceed to Checkout</button>
 </div>
 
 <footer>
 <p>© 2026 ONE RUPEE MART</p>
-<p>Made with care ❤️</p>
+<p>Smart Shopping, Small Price!</p>
 </footer>
 
 <script>
-function buy(product) {
-  alert("You selected: " + product);
+const products=[
+{id:1,name:"T-Shirt",category:"Clothes",price:199,emoji:"👕"},
+{id:2,name:"Fashion Cap",category:"Clothes",price:99,emoji:"🧢"},
+{id:3,name:"Headphones",category:"Electronics",price:299,emoji:"🎧"},
+{id:4,name:"Mobile Cover",category:"Electronics",price:149,emoji:"📱"},
+{id:5,name:"Water Bottle",category:"Home",price:79,emoji:"🍼"},
+{id:6,name:"Kitchen Item",category:"Home",price:129,emoji:"🍳"},
+{id:7,name:"Beauty Kit",category:"Beauty",price:249,emoji:"💄"},
+{id:8,name:"Toy Car",category:"Toys",price:99,emoji:"🚗"}
+];
+
+let category="All";
+let cart=[];
+
+function setCategory(c){
+category=c;
+render();
 }
 
-function searchProducts() {
-  let value = document.getElementById("search").value.toLowerCase();
-  document.querySelectorAll(".card").forEach(card => {
-    card.style.display = card.innerText.toLowerCase().includes(value)
-      ? "" : "none";
-  });
+function render(){
+let search=document.getElementById("search").value.toLowerCase();
+let list=products.filter(p=>
+(category==="All"||p.category===category)&&
+p.name.toLowerCase().includes(search)
+);
+
+document.getElementById("products").innerHTML=list.map(p=>`
+<div class="card">
+<div class="pic">${p.emoji}</div>
+<h3>${p.name}</h3>
+<p>${p.category}</p>
+<p class="price">₹${p.price}</p>
+<button onclick="addToCart(${p.id})">Add to Cart</button>
+</div>
+`).join("") || "<p>No products found.</p>";
 }
+
+function addToCart(id){
+let item=cart.find(x=>x.id===id);
+if(item){item.qty++}
+else{cart.push({id:id,qty:1})}
+updateCart();
+}
+
+function updateCart(){
+let total=0;
+let html="";
+
+cart.forEach(item=>{
+let p=products.find(x=>x.id===item.id);
+let amount=p.price*item.qty;
+total+=amount;
+
+html+=`
+<div class="cart-item">
+<span>${p.name} × ${item.qty}</span>
+<span>₹${amount}
+<button onclick="removeItem(${p.id})">X</button></span>
+</div>`;
+});
+
+document.getElementById("cartItems").innerHTML=
+html||"Your cart is empty.";
+document.getElementById("total").innerText=total;
+}
+
+function removeItem(id){
+cart=cart.filter(x=>x.id!==id);
+updateCart();
+}
+
+function checkout(){
+if(cart.length===0){
+alert("Please add a product first.");
+return;
+}
+alert("Your cart is ready! Online payment and order system will be connected in the next step.");
+}
+
+render();
 </script>
-
 </body>
 </html>
+
