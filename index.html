@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONE RUPEE MART</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6fa;
+}
+header {
+  background: #172554;
+  color: white;
+  padding: 22px;
+  text-align: center;
+}
+.search {
+  padding: 15px;
+  text-align: center;
+}
+input {
+  width: 85%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+h2 { text-align: center; }
+.products {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+}
+.card {
+  background: white;
+  padding: 18px 10px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #ddd;
+}
+.price {
+  color: #15803d;
+  font-weight: bold;
+}
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 11px;
+  border-radius: 8px;
+}
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>ONE RUPEE MART</h1>
+<p>Smart Shopping, Small Price!</p>
+</header>
+
+<div class="search">
+<input type="text" id="search" placeholder="Search products..."
+oninput="searchProducts()">
+</div>
+
+<h2>Our Products</h2>
+
+<div class="products" id="products">
+
+<div class="card">
+<h3>Product 1</h3>
+<p>Useful Item</p>
+<p class="price">₹1</p>
+<button onclick="buy('Product 1')">Buy Now</button>
+</div>
+
+<div class="card">
+<h3>Product 2</h3>
+<p>Daily Essential</p>
+<p class="price">₹1</p>
+<button onclick="buy('Product 2')">Buy Now</button>
+</div>
+
+<div class="card">
+<h3>Product 3</h3>
+<p>Smart Accessory</p>
+<p class="price">₹1</p>
+<button onclick="buy('Product 3')">Buy Now</button>
+</div>
+
+<div class="card">
+<h3>Product 4</h3>
+<p>Special Item</p>
+<p class="price">₹1</p>
+<button onclick="buy('Product 4')">Buy Now</button>
+</div>
+
+</div>
+
+<footer>
+<p>© 2026 ONE RUPEE MART</p>
+<p>Made with care ❤️</p>
+</footer>
+
+<script>
+function buy(product) {
+  alert("You selected: " + product);
+}
+
+function searchProducts() {
+  let value = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = card.innerText.toLowerCase().includes(value)
+      ? "" : "none";
+  });
+}
+</script>
+
+</body>
+</html>
