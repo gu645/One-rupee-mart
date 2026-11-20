@@ -27,6 +27,146 @@ footer{text-align:center;padding:20px}
 </style>
 </head>
 <body>
+<style>
+#cartBox {
+  position: fixed;
+  right: 15px;
+  bottom: 20px;
+  z-index: 9999;
+  background: #172554;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 30px;
+  border: 0;
+  font-size: 16px;
+}
+#cartPanel {
+  display: none;
+  position: fixed;
+  inset: 10% 5%;
+  background: white;
+  z-index: 10000;
+  padding: 20px;
+  border-radius: 15px;
+  overflow-y: auto;
+  box-shadow: 0 0 0 100vmax #0008;
+}
+.cartItem {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+.cartItem button {
+  margin: 5px;
+  padding: 7px 12px;
+  background: #172554;
+  color: white;
+}
+</style>
+
+<button id="cartBox" onclick="showCart()">
+  🛒 Cart (<span id="cartCount">0</span>)
+</button>
+
+<div id="cartPanel">
+  <h2>My Shopping Cart</h2>
+  <div id="cartItems"></div>
+  <h3>Total: ₹<span id="cartTotal">0</span></h3>
+  <button onclick="sendOrder()">Order on WhatsApp</button>
+  <button onclick="hideCart()">Close</button>
+</div>
+
+<script>
+let cart = [];
+
+function addToCart(name, price) {
+  let item = cart.find(x => x.name === name);
+  if (item) {
+    item.qty++;
+  } else {
+    cart.push({name, price, qty: 1});
+  }
+  updateCart();
+  alert(name + " added to cart!");
+}
+
+function updateCart() {
+  let count = 0;
+  let total = 0;
+  let html = "";
+
+  cart.forEach((item, i) => {
+    count += item.qty;
+    total += item.price * item.qty;
+
+    html += `<div class="cartItem">
+      <b>${item.name}</b><br>
+      ₹${item.price} × ${item.qty}
+      <button onclick="changeQty(${i},1)">+</button>
+      <button onclick="changeQty(${i},-1)">-</button>
+    </div>`;
+  });
+
+  document.getElementById("cartCount").innerText = count;
+  document.getElementById("cartItems").innerHTML =
+    html || "Your cart is empty";
+  document.getElementById("cartTotal").innerText = total;
+}
+
+function changeQty(i, change) {
+  cart[i].qty += change;
+  if (cart[i].qty <= 0) cart.splice(i, 1);
+  updateCart();
+}
+
+function showCart() {
+  document.getElementById("cartPanel").style.display = "block";
+}
+
+function hideCart() {
+  document.getElementById("cartPanel").style.display = "none";
+}
+
+function sendOrder() {
+  if (!cart.length) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  let message = "ONE RUPEE MART ORDER%0A";
+  cart.forEach(item => {
+    message += encodeURIComponent(
+      item.name + " x " + item.qty +
+      " = Rs " + item.price * item.qty + "\n"
+    );
+  });
+
+  let total = cart.reduce((s, x) =>
+    s + x.price * x.qty, 0);
+
+  message += encodeURIComponent("Total: Rs " + total);
+
+  window.open(
+    "https://wa.me/919803306797?text=" + message,
+    "_blank"
+  );
+}
+
+document.querySelectorAll(".card").forEach(card => {
+  if (card.querySelector(".add-cart")) return;
+
+  let name = card.querySelector("h3")?.innerText || "Product";
+  let text = card.innerText;
+  let match = text.match(/₹\s*(\d+(?:\.\d+)?)/);
+  let price = match ? Number(match[1]) : 0;
+
+  let btn = document.createElement("button");
+  btn.className = "add-cart";
+  btn.innerText = "🛒 Add to Cart";
+  btn.onclick = () => addToCart(name, price);
+  card.appendChild(btn);
+});
+</script>
+
 
 <header>
 <h1>🛍️ ONE RUPEE MART</h1>
